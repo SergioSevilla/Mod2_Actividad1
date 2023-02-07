@@ -1,2 +1,25 @@
 basedatos:
-  path: .\db\tienda.db
+  path: .\tienda.db
+tables:
+  productos:
+    columns:
+      id:
+        type: INTEGER PRIMARY KEY
+      nombre:
+        type: TEXT
+      precio:
+        type: REAL
+      cantidad:
+        type: INTEGER
+  auditoria:
+    columns:
+      id:
+        type: INTEGER PRIMARY KEY
+      metodo:
+        type: TEXT
+      url:
+        type: TEXT
+      cabeceras:
+        type: TEXT
+      fecha:
+        type: TEXT
