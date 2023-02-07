@@ -12,10 +12,11 @@ Uso: tienda.py [-h] [-servidor SERVIDOR] [-puerto PUERTO] -config <fichero_YAML>
 """
 import os
 import argparse
-from flask import Flask, Response
+from flask import Flask, Response, request,  jsonify
 import yaml
 from yaml.loader import SafeLoader
 import persistencia
+import json
 
 
 def check_ports(value):
@@ -64,10 +65,36 @@ configuracion = cargar_configuracion (args.config)
 
 conexion = persistencia.Persistencia(configuracion)
 
+
+app = Flask(__name__)
+
+#CRUD productos
+@app.route("/productos",methods=['GET', 'POST'])
+def producto():
+    if request.method == 'GET':
+        args = request.args
+        product_id = args.get("id", default=0, type=int)
+        if product_id == 0:
+            resultado = conexion.obtener_tabla_all ("productos")
+            return jsonify(resultado)
+        else:
+            resultado = conexion.obtener_por_id("productos", str(product_id))
+            return jsonify(resultado)
+
+
+@app.route("/productos/<product_id>",methods=['GET','DELETE','PUT'])
+def producto_id(product_id):
+    if request.method == 'GET':
+        resultado = conexion.obtener_por_id ("productos",product_id)
+        return jsonify(resultado)
+    if request.method == 'DELETE':
+        resultado = conexion.borrar_por_id("productos", product_id)
+        return jsonify(resultado)
+    if request.method == 'PUT':
+        request_json = request.get_json()
+        resultado = conexion.actualizar_producto (product_id,request_json.get('nombre'),request_json.get('precio'),request_json.get('cantidad'))
+        return jsonify(resultado)
+
 #inicio de flask con host y puerto predefinidos
-"""app = Flask(__name__)
 if __name__ == '__main__':
-    app.run(host=args.servidor, port=args.puerto)"""
-
-
-
+    app.run(host=args.servidor, port=args.puerto)
