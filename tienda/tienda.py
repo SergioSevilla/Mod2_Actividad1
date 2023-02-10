@@ -99,10 +99,10 @@ def producto_id(product_id):
         return jsonify(resultado)
 
 #servicio de cambio de precio
-@app.route("/productos/<product_id>/cambiar-precio",methods=['PUT'])
-def cambiar_precio(product_id):
+@app.route("/productos/<product_id>/modificar-precio",methods=['PUT'])
+def modificar_precio(product_id):
     request_json = request.get_json()
-    resultado = conexion.cambiar_precio( product_id, request_json.get('precio'))
+    resultado = conexion.modificar_precio( product_id, request_json.get('precio'))
     return jsonify(resultado)
 
 #servicio de cambio de precio

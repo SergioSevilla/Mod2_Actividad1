@@ -45,6 +45,12 @@ class Persistencia:
         results = cursor.fetchall()
         return (results[0][0])
 
+    def get_precio(self, id):
+        cursor = self.conexion.cursor()
+        cursor.execute("SELECT precio FROM productos WHERE id="+str(id))
+        results = cursor.fetchall()
+        return (results[0][0])
+
     def inicializar_productos(self):
         #todo: llamar a la API de almacen para poblar la tabla de productos
         print("Consultando almacen...")
@@ -89,7 +95,7 @@ class Persistencia:
             datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3]}
         return datos
 
-    def cambiar_precio(self, id, precio):
+    def modificar_precio(self, id, precio):
         cursor = self.conexion.cursor()
         cursor.execute("UPDATE productos SET  precio = " + str(precio) + " WHERE id=" + str(id))
         self.conexion.commit()
@@ -99,7 +105,7 @@ class Persistencia:
             datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3]}
         return datos
 
-    def  crear_producto(self,nombre,precio,cantidad):
+    def crear_producto(self,nombre,precio,cantidad):
         cursor = self.conexion.cursor()
         cursor.execute("INSERT INTO productos (nombre,precio,cantidad) VALUES ('"+nombre+"',"+ str(precio) + ","
                        + str(cantidad)+")")
@@ -128,7 +134,12 @@ class Persistencia:
                 print ("no hay producto")
                 # todo: el producto existe pero no hay existencias
             else:
-                return self.decrementar_cantidad(producto_id,cantidad)
+                precio = self.get_precio(producto_id)
+                if precio > 0:
+                    return self.decrementar_cantidad(producto_id,cantidad)
+                else:
+                    print("no tiene precio")
+                    # todo: el producto existe pero no tiene precio
         else:
             print ("no exitte")
             #todo: el producto no existe
