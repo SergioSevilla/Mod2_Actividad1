@@ -33,14 +33,26 @@ class Persistencia:
         results = cursor.fetchall()
         return len (results)
 
+    def check_productos_by_id(self, id):
+        cursor = self.conexion.cursor()
+        cursor.execute("SELECT * FROM productos WHERE id="+str(id))
+        results = cursor.fetchall()
+        return len (results)
+
+    def get_cantidad(self, id):
+        cursor = self.conexion.cursor()
+        cursor.execute("SELECT cantidad FROM productos WHERE id="+str(id))
+        results = cursor.fetchall()
+        return (results[0][0])
+
     def inicializar_productos(self):
         #todo: llamar a la API de almacen para poblar la tabla de productos
         print("Consultando almacen...")
         # simulamos almacen
         cursor = self.conexion.cursor()
-        cursor.execute("INSERT INTO productos (id,nombre,precio,cantidad) VALUES (1,'Nolotil',100.30,5)")
-        cursor.execute("INSERT INTO productos (id,nombre,precio,cantidad) VALUES (2,'Dalsy',30.55,7)")
-        cursor.execute("INSERT INTO productos (id,nombre,precio,cantidad) VALUES (3,'Apiretal',10.15,3)")
+        cursor.execute("INSERT INTO productos (nombre,precio,cantidad) VALUES ('Nolotil',100.30,5)")
+        cursor.execute("INSERT INTO productos (nombre,precio,cantidad) VALUES ('Dalsy',30.55,7)")
+        cursor.execute("INSERT INTO productos (nombre,precio,cantidad) VALUES ('Apiretal',10.15,3)")
         self.conexion.commit()
 
     def obtener_tabla_all(self,nombre_tabla):
@@ -68,10 +80,56 @@ class Persistencia:
 
     def actualizar_producto(self,id,nombre,precio,cantidad):
         cursor = self.conexion.cursor()
-        cursor.execute("UPDATE productos SET nombre ='"+nombre+"', precio = "+str(precio)+", cantidad = "+str(cantidad)+" WHERE id="+str(id))
+        cursor.execute("UPDATE productos SET nombre ='"+nombre+"', precio = "+str(precio)+", cantidad = "+str(cantidad)+
+                       " WHERE id="+str(id))
         self.conexion.commit()
         data = cursor.execute("SELECT * FROM productos WHERE id=" + str(id))
         datos = {}
         for fila in data:
             datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3]}
         return datos
+
+    def cambiar_precio(self, id, precio):
+        cursor = self.conexion.cursor()
+        cursor.execute("UPDATE productos SET  precio = " + str(precio) + " WHERE id=" + str(id))
+        self.conexion.commit()
+        data = cursor.execute("SELECT * FROM productos WHERE id=" + str(id))
+        datos = {}
+        for fila in data:
+            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3]}
+        return datos
+
+    def  crear_producto(self,nombre,precio,cantidad):
+        cursor = self.conexion.cursor()
+        cursor.execute("INSERT INTO productos (nombre,precio,cantidad) VALUES ('"+nombre+"',"+ str(precio) + ","
+                       + str(cantidad)+")")
+        last_id = cursor.lastrowid
+        self.conexion.commit()
+        data = cursor.execute("SELECT * FROM productos WHERE id=" + str(last_id))
+        datos = {}
+        for fila in data:
+            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3]}
+        return datos
+
+    def decrementar_cantidad(self,producto_id, cantidad):
+        cursor = self.conexion.cursor()
+        cursor.execute("UPDATE productos SET cantidad = " + str(cantidad-1) + " WHERE id=" + str(producto_id))
+        self.conexion.commit()
+        data = cursor.execute("SELECT * FROM productos WHERE id=" + str(producto_id))
+        datos = {}
+        for fila in data:
+            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3]}
+        return datos
+
+    def vender_producto(self,producto_id):
+        if self.check_productos_by_id(producto_id):
+            cantidad = self.get_cantidad(producto_id)
+            if cantidad == 0:
+                print ("no hay producto")
+                # todo: el producto existe pero no hay existencias
+            else:
+                return self.decrementar_cantidad(producto_id,cantidad)
+        else:
+            print ("no exitte")
+            #todo: el producto no existe
+        return {}

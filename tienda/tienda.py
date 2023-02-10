@@ -80,7 +80,10 @@ def producto():
         else:
             resultado = conexion.obtener_por_id("productos", str(product_id))
             return jsonify(resultado)
-
+    if request.method == 'POST':
+        request_json = request.get_json()
+        resultado = conexion.crear_producto(request_json.get('nombre'),request_json.get('precio'),request_json.get('cantidad'))
+        return jsonify(resultado)
 
 @app.route("/productos/<product_id>",methods=['GET','DELETE','PUT'])
 def producto_id(product_id):
@@ -94,6 +97,20 @@ def producto_id(product_id):
         request_json = request.get_json()
         resultado = conexion.actualizar_producto (product_id,request_json.get('nombre'),request_json.get('precio'),request_json.get('cantidad'))
         return jsonify(resultado)
+
+#servicio de cambio de precio
+@app.route("/productos/<product_id>/cambiar-precio",methods=['PUT'])
+def cambiar_precio(product_id):
+    request_json = request.get_json()
+    resultado = conexion.cambiar_precio( product_id, request_json.get('precio'))
+    return jsonify(resultado)
+
+#servicio de cambio de precio
+@app.route("/productos/<product_id>/vender",methods=['POST'])
+def vender_producto(product_id):
+    resultado = conexion.vender_producto( product_id)
+    return jsonify(resultado)
+
 
 #inicio de flask con host y puerto predefinidos
 if __name__ == '__main__':

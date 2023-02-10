@@ -4,7 +4,7 @@ tables:
   productos:
     columns:
       id:
-        type: INTEGER PRIMARY KEY
+        type: INTEGER PRIMARY KEY AUTOINCREMENT
       nombre:
         type: TEXT
       precio:
