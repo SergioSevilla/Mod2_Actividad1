@@ -1,5 +1,10 @@
 basedatos:
   path: .\tienda.db
+almacen:
+  servidor: localhost
+  puerto: 6000
+consumidor:
+  nombre: tienda
 tables:
   productos:
     columns:
@@ -11,11 +16,13 @@ tables:
         type: REAL
       cantidad:
         type: INTEGER
-  auditoria:
+      ventas:
+        type: INTEGER
+  ventas:
     columns:
       id:
         type: INTEGER PRIMARY KEY
-      metodo:
+      producto_id:
         type: TEXT
       url:
         type: TEXT

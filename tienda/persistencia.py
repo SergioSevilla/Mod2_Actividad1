@@ -8,9 +8,6 @@ class Persistencia:
         database_path = configuracion["basedatos"]["path"]
         self.conexion = sqlite3.connect(database_path, check_same_thread=False)
         self.crear_esquema(configuracion)
-        if self.check_productos() == 0:
-            self.inicializar_productos()
-
 
 
     def crear_esquema (self,configuracion):
@@ -51,22 +48,12 @@ class Persistencia:
         results = cursor.fetchall()
         return (results[0][0])
 
-    def inicializar_productos(self):
-        #todo: llamar a la API de almacen para poblar la tabla de productos
-        print("Consultando almacen...")
-        # simulamos almacen
-        cursor = self.conexion.cursor()
-        cursor.execute("INSERT INTO productos (nombre,precio,cantidad) VALUES ('Nolotil',100.30,5)")
-        cursor.execute("INSERT INTO productos (nombre,precio,cantidad) VALUES ('Dalsy',30.55,7)")
-        cursor.execute("INSERT INTO productos (nombre,precio,cantidad) VALUES ('Apiretal',10.15,3)")
-        self.conexion.commit()
-
     def obtener_tabla_all(self,nombre_tabla):
         cursor = self.conexion.cursor()
         data = cursor.execute("SELECT * FROM "+nombre_tabla)
         datos=[]
         for fila in data:
-            datos.append({'id' : fila[0],'nombre' : fila[1], 'precio' : fila[2], 'cantidad' : fila[3]})
+            datos.append({'id' : fila[0],'nombre' : fila[1], 'precio' : fila[2], 'cantidad' : fila[3], 'ventas': fila[4]})
         return datos
 
     def obtener_por_id(self,nombre_tabla,product_id):
@@ -74,7 +61,7 @@ class Persistencia:
         data = cursor.execute("SELECT * FROM "+nombre_tabla+" WHERE id="+product_id)
         datos={}
         for fila in data:
-            datos={'id' : fila[0],'nombre' : fila[1], 'precio' : fila[2], 'cantidad' : fila[3]}
+            datos={'id' : fila[0],'nombre' : fila[1], 'precio' : fila[2], 'cantidad' : fila[3], 'ventas': fila[4]}
         return datos
 
     def borrar_por_id(self,nombre_tabla,product_id):
@@ -84,15 +71,15 @@ class Persistencia:
         datos={}
         return datos
 
-    def actualizar_producto(self,id,nombre,precio,cantidad):
+    def actualizar_producto(self,id,nombre,precio,cantidad,ventas):
         cursor = self.conexion.cursor()
         cursor.execute("UPDATE productos SET nombre ='"+nombre+"', precio = "+str(precio)+", cantidad = "+str(cantidad)+
-                       " WHERE id="+str(id))
+                       ", ventas = "+str(ventas)+" WHERE id="+str(id))
         self.conexion.commit()
         data = cursor.execute("SELECT * FROM productos WHERE id=" + str(id))
         datos = {}
         for fila in data:
-            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3]}
+            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3], 'ventas': fila[4]}
         return datos
 
     def modificar_precio(self, id, precio):
@@ -102,19 +89,19 @@ class Persistencia:
         data = cursor.execute("SELECT * FROM productos WHERE id=" + str(id))
         datos = {}
         for fila in data:
-            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3]}
+            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3], 'ventas': fila[4]}
         return datos
 
-    def crear_producto(self,nombre,precio,cantidad):
+    def crear_producto(self,nombre,precio,cantidad,ventas):
         cursor = self.conexion.cursor()
-        cursor.execute("INSERT INTO productos (nombre,precio,cantidad) VALUES ('"+nombre+"',"+ str(precio) + ","
-                       + str(cantidad)+")")
+        cursor.execute("INSERT INTO productos (nombre,precio,cantidad,ventas) VALUES ('"+nombre+"',"+ str(precio) + ","
+                       + str(cantidad)+","+str(ventas)+")")
         last_id = cursor.lastrowid
         self.conexion.commit()
         data = cursor.execute("SELECT * FROM productos WHERE id=" + str(last_id))
         datos = {}
         for fila in data:
-            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3]}
+            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3], 'ventas': fila[4]}
         return datos
 
     def decrementar_cantidad(self,producto_id, cantidad):
@@ -124,8 +111,17 @@ class Persistencia:
         data = cursor.execute("SELECT * FROM productos WHERE id=" + str(producto_id))
         datos = {}
         for fila in data:
-            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3]}
+            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3], 'ventas': fila[4]}
         return datos
+
+    def aumentar_venta(self,producto_id):
+        cursor = self.conexion.cursor()
+        data = cursor.execute("SELECT * FROM productos WHERE id=" + str(producto_id))
+        datos = {}
+        for fila in data:
+            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3], 'ventas': fila[4]}
+        cursor.execute("UPDATE productos SET ventas = " + str(datos["ventas"]+1) + " WHERE id=" + str(producto_id))
+        self.conexion.commit()
 
     def vender_producto(self,producto_id):
         if self.check_productos_by_id(producto_id):
@@ -136,6 +132,7 @@ class Persistencia:
             else:
                 precio = self.get_precio(producto_id)
                 if precio > 0:
+                    self.aumentar_venta(producto_id)
                     return self.decrementar_cantidad(producto_id,cantidad)
                 else:
                     print("no tiene precio")

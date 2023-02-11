@@ -19,6 +19,7 @@ import persistencia
 import json
 
 
+
 def check_ports(value):
     '''
     Chequea si el puerto introducido por parámetro se encuentra
@@ -47,6 +48,14 @@ def cargar_configuracion(path_config):
         datos = yaml.load(f_config, Loader=SafeLoader)
     return datos
 
+def inicializar_productos(conexion):
+    #todo: llamar a la API de almacen para poblar la tabla de productos
+    print("Consultando almacen...")
+    # simulamos almacen
+    conexion.crear_producto('Nolotil',100.30,5,0)
+    conexion.crear_producto('Dalsy', 30.55, 7,0)
+    conexion.crear_producto('Apiretal', 10.15, 3,0)
+
 # configuración de todos los parámetros de entrada del programa
 parser = argparse.ArgumentParser()
 requiredNamed = parser.add_argument_group('required arguments')
@@ -65,6 +74,8 @@ configuracion = cargar_configuracion (args.config)
 
 conexion = persistencia.Persistencia(configuracion)
 
+if conexion.check_productos() == 0:
+    inicializar_productos(conexion)
 
 app = Flask(__name__)
 
@@ -82,7 +93,7 @@ def producto():
             return jsonify(resultado)
     if request.method == 'POST':
         request_json = request.get_json()
-        resultado = conexion.crear_producto(request_json.get('nombre'),request_json.get('precio'),request_json.get('cantidad'))
+        resultado = conexion.crear_producto(request_json.get('nombre'),request_json.get('precio'),request_json.get('cantidad'), request_json.get('ventas'))
         return jsonify(resultado)
 
 @app.route("/productos/<product_id>",methods=['GET','DELETE','PUT'])
@@ -95,17 +106,19 @@ def producto_id(product_id):
         return jsonify(resultado)
     if request.method == 'PUT':
         request_json = request.get_json()
-        resultado = conexion.actualizar_producto (product_id,request_json.get('nombre'),request_json.get('precio'),request_json.get('cantidad'))
+        resultado = conexion.actualizar_producto (product_id,request_json.get('nombre'),request_json.get('precio'),
+                                                  request_json.get('cantidad'),request_json.get('ventas'))
         return jsonify(resultado)
 
+
 #servicio de cambio de precio
-@app.route("/productos/<product_id>/modificar-precio",methods=['PUT'])
+@app.route("/productos/<product_id>/modificar-precio",methods=['PATCH'])
 def modificar_precio(product_id):
     request_json = request.get_json()
     resultado = conexion.modificar_precio( product_id, request_json.get('precio'))
     return jsonify(resultado)
 
-#servicio de cambio de precio
+#servicio de venta de producto
 @app.route("/productos/<product_id>/vender",methods=['POST'])
 def vender_producto(product_id):
     resultado = conexion.vender_producto( product_id)
