@@ -1,7 +1,5 @@
-import os
 import sqlite3
-from sqlite3 import Error
-import json
+from sqlite3 import Error, IntegrityError
 
 class Persistencia:
     def __init__(self,configuracion):
@@ -71,16 +69,17 @@ class Persistencia:
         datos={}
         return datos
 
-    def actualizar_producto(self,id,nombre,precio,cantidad,ventas):
+    def actualizar_producto(self,nombre,precio,cantidad,ventas,id_act):
         cursor = self.conexion.cursor()
-        cursor.execute("UPDATE productos SET nombre ='"+nombre+"', precio = "+str(precio)+", cantidad = "+str(cantidad)+
-                       ", ventas = "+str(ventas)+" WHERE id="+str(id))
+        cursor.execute("UPDATE productos SET nombre ='"+nombre+"', precio = "+str(precio)+
+                       ", cantidad = "+str(cantidad)+", ventas = "+str(ventas)+" WHERE id="+str(id_act))
         self.conexion.commit()
-        data = cursor.execute("SELECT * FROM productos WHERE id=" + str(id))
+        data = cursor.execute("SELECT * FROM productos WHERE id=" + str(id_act))
         datos = {}
         for fila in data:
             datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3], 'ventas': fila[4]}
         return datos
+
 
     def modificar_precio(self, id, precio):
         cursor = self.conexion.cursor()
@@ -92,17 +91,21 @@ class Persistencia:
             datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3], 'ventas': fila[4]}
         return datos
 
-    def crear_producto(self,nombre,precio,cantidad,ventas):
+    def crear_producto(self,id, nombre,precio,cantidad,ventas):
         cursor = self.conexion.cursor()
-        cursor.execute("INSERT INTO productos (nombre,precio,cantidad,ventas) VALUES ('"+nombre+"',"+ str(precio) + ","
-                       + str(cantidad)+","+str(ventas)+")")
-        last_id = cursor.lastrowid
-        self.conexion.commit()
-        data = cursor.execute("SELECT * FROM productos WHERE id=" + str(last_id))
-        datos = {}
-        for fila in data:
-            datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3], 'ventas': fila[4]}
-        return datos
+        try:
+            cursor.execute("INSERT INTO productos (id,nombre,precio,cantidad,ventas) VALUES ("+str(id)+",'"+nombre+"',"+ str(precio) + ","
+                           + str(cantidad)+","+str(ventas)+")")
+            last_id = cursor.lastrowid
+            self.conexion.commit()
+            data = cursor.execute("SELECT * FROM productos WHERE id=" + str(last_id))
+            datos = {}
+            for fila in data:
+                datos = {'id': fila[0], 'nombre': fila[1], 'precio': fila[2], 'cantidad': fila[3], 'ventas': fila[4]}
+            return datos
+        except IntegrityError:
+            return {}
+
 
     def decrementar_cantidad(self,producto_id, cantidad):
         cursor = self.conexion.cursor()
@@ -124,20 +127,16 @@ class Persistencia:
         self.conexion.commit()
 
     def vender_producto(self,producto_id):
-        if self.check_productos_by_id(producto_id):
-            cantidad = self.get_cantidad(producto_id)
-            if cantidad == 0:
-                print ("no hay producto")
-                # todo: el producto existe pero no hay existencias
-            else:
-                precio = self.get_precio(producto_id)
-                if precio > 0:
-                    self.aumentar_venta(producto_id)
-                    return self.decrementar_cantidad(producto_id,cantidad)
-                else:
-                    print("no tiene precio")
-                    # todo: el producto existe pero no tiene precio
+        cantidad = self.get_cantidad(producto_id)
+        if cantidad == 0:
+            result_error = {}
+            datos = {'error': 'There is not enough quantity to sell the article'}
+            return datos
         else:
-            print ("no exitte")
-            #todo: el producto no existe
-        return {}
+            precio = self.get_precio(producto_id)
+            if precio > 0:
+                self.aumentar_venta(producto_id)
+                return self.decrementar_cantidad(producto_id,cantidad)
+            else:
+                datos = {'error': 'The prize of the article is equal to zero'}
+                return datos

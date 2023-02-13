@@ -9,7 +9,7 @@ tables:
   productos:
     columns:
       id:
-        type: INTEGER PRIMARY KEY AUTOINCREMENT
+        type: INTEGER PRIMARY KEY
       nombre:
         type: TEXT
       precio:
