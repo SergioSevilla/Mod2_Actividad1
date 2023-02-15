@@ -2,31 +2,19 @@ basedatos:
   path: .\tienda.db
 almacen:
   servidor: localhost
-  puerto: 6000
+  puerto: 5000
 consumidor:
-  nombre: tienda
+  nombre: User01
 tables:
-  productos:
+  articles:
     columns:
       id:
         type: INTEGER PRIMARY KEY
-      nombre:
+      name:
         type: TEXT
-      precio:
+      price:
         type: REAL
-      cantidad:
+      amount:
         type: INTEGER
-      ventas:
+      sales:
         type: INTEGER
-  ventas:
-    columns:
-      id:
-        type: INTEGER PRIMARY KEY
-      producto_id:
-        type: TEXT
-      url:
-        type: TEXT
-      cabeceras:
-        type: TEXT
-      fecha:
-        type: TEXT
