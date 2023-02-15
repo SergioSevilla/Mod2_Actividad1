@@ -1,0 +1,5 @@
+---
+basedatos:
+  path: C:\Users\josperez\OneDrive\Documentos\Docs\Master Naxer\htdocs\python\Mod2_Actividad1\Almacen\almacen.db
+  consumidor_almacen: User01
+  consumidor_almacen_key: Password01

@@ -1,0 +1,337 @@
+---
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Aplicacion Almacen
+  description: Free fake API for testing and prototyping.
+servers: 
+  - url: https://localhost:5000/almacen/v1
+tags:
+  - name: articles
+    description: Information about your articles
+paths:
+  /articles:
+    post:
+      tags:
+        - articles
+      summary: Add a new article to the store
+      description: Add a new article to the store
+      parameters:
+        - name: consumer
+          in: header
+          description: id of the consumer
+          required: true
+          schema:
+            type: string
+        - name: api_key
+          in: header
+          description: key of the consumer in this api
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example: {
+                            "article_id": 1,
+                            "article_name": "15",
+                            "availabe": "S",
+                            "description": "Article4 description",
+                            "stock_units": 200
+                        }
+        "400":
+          description: General error
+        "428":
+          description: Json data from the body is lost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              example: {
+                        "article_id": 1,
+                        "article_name": "15",
+                        "availabe": "S",
+                        "description": "Article4 description",
+                        "stock_units": 200
+                        }
+        required: true
+    get:
+      tags:
+        - articles
+      summary: Returns all the articles in  the store
+      description: Returns all the articles in  the store
+      parameters:
+        - name: consumer
+          in: header
+          description: id of the consumer
+          required: true
+          schema:
+            type: string
+        - name: api_key
+          in: header
+          description: key of the consumer in this api
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example: {
+                            "article_id": 1,
+                            "article_name": "15",
+                            "availabe": "S",
+                            "description": "Article4 description",
+                            "stock_units": 200
+                        }
+        '400':
+          description: General error
+  /articles/{article_id}:
+    put:
+      tags:
+        - articles
+      summary: Modify an article identified by id
+      description: Modify a post identified by id
+      parameters:
+        - name: article_id
+          in: path
+          description: id of the article to be returned
+          required: true
+          schema:
+            type: string
+        - name: consumer
+          in: header
+          description: id of the consumer
+          required: true
+          schema:
+            type: string
+        - name: api_key
+          in: header
+          description: key of the consumer in this api
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example: {
+                            "article_id": 1,
+                            "article_name": "15",
+                            "availabe": "S",
+                            "description": "Article4 description",
+                            "stock_units": 200
+                        }
+        "400":
+          description: General error
+        "404":
+          description: Article_id not found
+        "428":
+          description: Json data from the body is lost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              example: {
+                        "article_id": 1,
+                        "article_name": "15",
+                        "availabe": "S",
+                        "description": "Article4 description",
+                        "stock_units": 200
+                    }
+        required: true
+    get:
+      tags:
+        - articles
+      summary: Finds an article by id
+      description: Returns a single article
+      parameters:
+        - name: article_id
+          in: path
+          description: id of the article to be returned
+          required: true
+          schema:
+            type: string
+        - name: consumer
+          in: header
+          description: id of the consumer
+          required: true
+          schema:
+            type: string
+        - name: api_key
+          in: header
+          description: key of the consumer in this api
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example: {
+                            "article_id": 1,
+                            "article_name": "15",
+                            "availabe": "S",
+                            "description": "Article4 description",
+                            "stock_units": 200
+                        }
+        '400':
+          description: General error
+        "404":
+          description: Article_id not found
+    delete:
+      tags:
+        - articles
+      summary: delete articles by id
+      description: deletes a single article
+      parameters:
+        - name: article_id
+          in: path
+          description: id of the posts to be returned
+          required: true
+          schema:
+            type: string
+        - name: consumer
+          in: header
+          description: id of the consumer
+          required: true
+          schema:
+            type: string
+        - name: api_key
+          in: header
+          description: key of the consumer in this api
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: General error
+        "404":
+          description: Article_id not found
+  /articles/{article_id}/send:
+    put:
+      tags:
+        - articles
+      summary: Send a quantity of an article identified by id
+      description: Retire a quantity of an article identified by id from store
+      parameters:
+        - name: article_id
+          in: path
+          description: id of the article to be sended
+          required: true
+          schema:
+            type: string
+        - name: consumer
+          in: header
+          description: id of the consumer
+          required: true
+          schema:
+            type: string
+        - name: api_key
+          in: header
+          description: key of the consumer in this api
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example: {
+                            "article_id": 1,
+                            "article_name": "15",
+                            "availabe": "S",
+                            "description": "Article4 description",
+                            "stock_units": 200
+                        }
+        "400":
+          description: General error
+        "404":
+          description: Article_id not found
+        "428":
+          description: Json data from the body is lost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              example: {
+                        "amount": 22
+                    }
+        required: true
+        
+  /articles/{article_id}/receive:
+    put:
+      tags:
+        - articles
+      summary: Receive a quantity of an article identified by id
+      description: Add a quantity of an article identified by id to store
+      parameters:
+        - name: article_id
+          in: path
+          description: id of the article to be sended
+          required: true
+          schema:
+            type: string
+        - name: consumer
+          in: header
+          description: id of the consumer
+          required: true
+          schema:
+            type: string
+        - name: api_key
+          in: header
+          description: key of the consumer in this api
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example: {
+                            "article_id": 1,
+                            "article_name": "15",
+                            "availabe": "S",
+                            "description": "Article4 description",
+                            "stock_units": 200
+                        }
+        "400":
+          description: Error
+        "404":
+          description: Article_id not found
+        "428":
+          description: Json data from the body is lost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              example: {
+                        "amount": 22
+                    }
+        required: true
+  
