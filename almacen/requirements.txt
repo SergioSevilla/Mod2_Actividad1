@@ -1,3 +1,5 @@
+# Modules required to run code_token.py
+Flask==2.2.2
+flask-swagger-ui==4.11.1
 argparse==1.4.0
-flask==2.2.2
-pyyaml==6.0
+PyYAML==6.0

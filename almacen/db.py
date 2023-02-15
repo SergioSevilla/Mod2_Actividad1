@@ -39,9 +39,9 @@ def populate_tables(conexion, default_consumer, default_api_key):
     res=cur.execute(statement)
     if (res.fetchone() == (0,)):
         data = [
-                (1, 'article1', 'desc of article1', 101, 'Y'),
-                (2, 'article2', 'desc of article2', 122, 'Y'),
-                (3, 'article3', 'desc of article3', 333, 'N')
+                (1, 'Nolotil', 'Analgésico Nolotil', 101, 'Y'),
+                (2, 'Dalsy', 'Antiinflamatorio infantil Dalsy (ibuprofeno)', 122, 'Y'),
+                (3, 'Apiretal', 'Analgésico infantil Apiretal (Paracetamol)', 333, 'Y')
                 ]
         statement  = "INSERT INTO articles VALUES(?, ?, ?, ?, ?)"
         cur.executemany(statement, data)

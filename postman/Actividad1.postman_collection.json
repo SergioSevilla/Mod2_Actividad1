@@ -10,369 +10,399 @@
 			"name": "Almacen",
 			"item": [
 				{
-					"name": "GET all Articles",
-					"event": [
+					"name": "Status_OK_201",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status GET request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "consumer",
-								"value": "User01",
-								"type": "text"
-							},
-							{
-								"key": "api_key",
-								"value": "{{api_key}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles",
-							"protocol": "http",
-							"host": [
-								"{{servidor_almacen}}"
+							"name": "CREATE Article",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful status POST request\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
 							],
-							"port": "5000",
-							"path": [
-								"almacen",
-								"v1",
-								"articles"
-							]
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "consumer",
+										"value": "User01",
+										"type": "text"
+									},
+									{
+										"key": "api_key",
+										"value": "{{api_key}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"article_id\": \"25\",\r\n    \"article_name\": \"Amoxicilina\",\r\n    \"description\": \"Amoxicilina antibiótico\",\r\n    \"stock_units\": \"200\",\r\n    \"available\": \"Y\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles",
+									"protocol": "http",
+									"host": [
+										"{{servidor_almacen}}"
+									],
+									"port": "5000",
+									"path": [
+										"almacen",
+										"v1",
+										"articles"
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
 				},
 				{
-					"name": "CREATE Article",
-					"event": [
+					"name": "Status_OK_200",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status POST request\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});\r",
-									""
+							"name": "GET all Articles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "consumer",
+										"value": "User01",
+										"type": "text"
+									},
+									{
+										"key": "api_key",
+										"value": "{{api_key}}",
+										"type": "text"
+									}
 								],
-								"type": "text/javascript"
-							}
+								"url": {
+									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles",
+									"protocol": "http",
+									"host": [
+										"{{servidor_almacen}}"
+									],
+									"port": "5000",
+									"path": [
+										"almacen",
+										"v1",
+										"articles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET Atricle by id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"User with id = 25 (new) has correct name \", () => {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.expect(responseJson.article_name).to.eql(\"Amoxicilina\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "consumer",
+										"value": "User01",
+										"type": "text"
+									},
+									{
+										"key": "api_key",
+										"value": "{{api_key}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}",
+									"protocol": "http",
+									"host": [
+										"{{servidor_almacen}}"
+									],
+									"port": "5000",
+									"path": [
+										"almacen",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "MODIFY Article by id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"User with id = 25 (new) has correct name \", () => {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.expect(responseJson.article_name).to.eql(\"Amoxicilina New\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "consumer",
+										"value": "User01",
+										"type": "text"
+									},
+									{
+										"key": "api_key",
+										"value": "{{api_key}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"article_id\": \"25\",\r\n    \"article_name\": \"Amoxicilina New\",\r\n    \"description\": \"new packaging Amoxicilina antibiotic\",\r\n    \"stock_units\": \"200\",\r\n    \"available\": \"Y\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}",
+									"protocol": "http",
+									"host": [
+										"{{servidor_almacen}}"
+									],
+									"port": "5000",
+									"path": [
+										"almacen",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SEND articles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"User with id = 25 (new) has correct amount \", () => {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.expect(JSON.stringify(responseJson.stock_units)).to.eql(\"178\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "consumer",
+										"value": "User01",
+										"type": "text"
+									},
+									{
+										"key": "api_key",
+										"value": "{{api_key}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"amount\": \"22\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}/send",
+									"protocol": "http",
+									"host": [
+										"{{servidor_almacen}}"
+									],
+									"port": "5000",
+									"path": [
+										"almacen",
+										"v1",
+										"articles",
+										"{{article_id}}",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RECEIVE articles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"User with id = 25 (new) has correct amount \", () => {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.expect(JSON.stringify(responseJson.stock_units)).to.eql(\"200\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "consumer",
+										"value": "User01",
+										"type": "text"
+									},
+									{
+										"key": "api_key",
+										"value": "{{api_key}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"amount\": \"22\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}/receive",
+									"protocol": "http",
+									"host": [
+										"{{servidor_almacen}}"
+									],
+									"port": "5000",
+									"path": [
+										"almacen",
+										"v1",
+										"articles",
+										"{{article_id}}",
+										"receive"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE article by id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "consumer",
+										"value": "User01",
+										"type": "text"
+									},
+									{
+										"key": "api_key",
+										"value": "{{api_key}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}",
+									"protocol": "http",
+									"host": [
+										"{{servidor_almacen}}"
+									],
+									"port": "5000",
+									"path": [
+										"almacen",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
 						}
 					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "consumer",
-								"value": "User01",
-								"type": "text"
-							},
-							{
-								"key": "api_key",
-								"value": "{{api_key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"article_id\": \"26\",\r\n    \"article_name\": \"Article20\",\r\n    \"description\": \"Article20 description\",\r\n    \"stock_units\": \"200\",\r\n    \"available\": \"Y\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
 							}
 						},
-						"url": {
-							"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles",
-							"protocol": "http",
-							"host": [
-								"{{servidor_almacen}}"
-							],
-							"port": "5000",
-							"path": [
-								"almacen",
-								"v1",
-								"articles"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "DELETE article by id",
-					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"type": "text/javascript",
 								"exec": [
-									"pm.test(\"Successful status POST request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
+									"pm.test(\"Successful status GET request\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
 									""
-								],
-								"type": "text/javascript"
+								]
 							}
 						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "consumer",
-								"value": "User01",
-								"type": "text"
-							},
-							{
-								"key": "api_key",
-								"value": "{{api_key}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/26",
-							"protocol": "http",
-							"host": [
-								"{{servidor_almacen}}"
-							],
-							"port": "5000",
-							"path": [
-								"almacen",
-								"v1",
-								"articles",
-								"26"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "MODIFY Article by id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status POST request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "consumer",
-								"value": "User01",
-								"type": "text"
-							},
-							{
-								"key": "api_key",
-								"value": "{{api_key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"article_id\": \"15\",\r\n    \"article_name\": \"Article15\",\r\n    \"description\": \"Article15 description\",\r\n    \"stock_units\": \"200\",\r\n    \"available\": \"Y\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}",
-							"protocol": "http",
-							"host": [
-								"{{servidor_almacen}}"
-							],
-							"port": "5000",
-							"path": [
-								"almacen",
-								"v1",
-								"articles",
-								"{{article_id}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET Atricle by id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status POST request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "consumer",
-								"value": "User01",
-								"type": "text"
-							},
-							{
-								"key": "api_key",
-								"value": "{{api_key}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}",
-							"protocol": "http",
-							"host": [
-								"{{servidor_almacen}}"
-							],
-							"port": "5000",
-							"path": [
-								"almacen",
-								"v1",
-								"articles",
-								"{{article_id}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "SEND articles",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status POST request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "consumer",
-								"value": "User01",
-								"type": "text"
-							},
-							{
-								"key": "api_key",
-								"value": "{{api_key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"amount\": \"22\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}/send",
-							"protocol": "http",
-							"host": [
-								"{{servidor_almacen}}"
-							],
-							"port": "5000",
-							"path": [
-								"almacen",
-								"v1",
-								"articles",
-								"{{article_id}}",
-								"send"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "RECEIVE articles",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status POST request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "consumer",
-								"value": "User01",
-								"type": "text"
-							},
-							{
-								"key": "api_key",
-								"value": "{{api_key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"amount\": \"22\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}/receive",
-							"protocol": "http",
-							"host": [
-								"{{servidor_almacen}}"
-							],
-							"port": "5000",
-							"path": [
-								"almacen",
-								"v1",
-								"articles",
-								"{{article_id}}",
-								"receive"
-							]
-						}
-					},
-					"response": []
+					]
 				}
 			],
 			"event": [
@@ -573,7 +603,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5000/productos/5",
+							"raw": "http://localhost:5000/productos/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -581,7 +611,7 @@
 							"port": "5000",
 							"path": [
 								"productos",
-								"5"
+								"1"
 							]
 						}
 					},
