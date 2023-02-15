@@ -12,7 +12,8 @@ Uso: tienda.py [-h] [-servidor SERVIDOR] [-puerto PUERTO] -config <fichero_YAML>
 """
 import os
 import argparse
-from flask import Flask, Response, request, jsonify, abort
+from flask import Flask, request, jsonify, abort
+from flask_swagger_ui import get_swaggerui_blueprint
 import yaml
 from yaml.loader import SafeLoader
 import persistencia
@@ -63,10 +64,13 @@ def inicializar_productos(conexion, configuracion, key):
     Se llamará a la API en caso de que no haya productos en la tienda.
     Se traerá un máximo de 2 productos del almacen
 
-
+    :param conexion: conexion a la base de datos
+    :param configuracion: fichero de configuración
+    :param key: api-key
     '''
-    productos_almacen = almacen_api.obtener_productos(key, configuracion)
+    productos_almacen = almacen_api.obtener_productos(key, configuracion) #obtenemos productos del almacén
     for article_json in productos_almacen.json():
+        # por cada artículo con unidades positivas que haya en el almacen, se traerá un máximo de 2
         if article_json["availabe"] == "Y" and article_json["stock_units"] > 0:
             if article_json["stock_units"] < 2:
 
@@ -99,15 +103,20 @@ configuracion = cargar_configuracion(args.config)
 # Se inicializa base de datos
 conexion = persistencia.inicializar(configuracion)
 
-#
+#Si no hubiera productos en la base de datos, se poblará llamando a las APIs de almacén
 if persistencia.check_productos(conexion) == 0:
     inicializar_productos(conexion, configuracion, args.key)
 
-
 app = Flask(__name__)
 
+SWAGGER_URL = "/api/docs" #url where the document is showed
+API_URL = "./api_doc.yaml" #where the document is in the flask server
 
-
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={"app_name": "Modulo2 Actividad 5"}
+)
 
 # CRUD productos
 @app.route("/tienda/v1/articles", methods=['GET', 'POST'])
@@ -178,7 +187,7 @@ def vender_producto(product_id):
             return jsonify(resultado), 200
 
 
-# s
+# servicio para recibir artículos del almacen
 @app.route("/tienda/v1/articles/<product_id>/receive", methods=['PUT'])
 def receive_article(product_id):
     respuesta = almacen_api.obtener_producto(args.key, configuracion, product_id)
