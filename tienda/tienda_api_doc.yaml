@@ -1,0 +1,234 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Aplicacion Tienda
+  description: Servicios REST de la aplicación tienda. Existe un CRUD para tratar los productos de la tienda y servicios para operar con el almacén
+servers:
+  - url: http://localhost:5000/tienda/v1
+  - url: http://localhost:4000/tienda/v1
+tags:
+  - name: articles
+    description: Información de los productos de la tienda
+paths:
+  /articles:
+    get:
+      tags:
+        - articles
+      summary: Devuelve todos los artículos de la tienda
+      description: Devuelve todos los artículos de la tienda
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/articles'
+        '400':
+          description: General error
+    post:
+      tags:
+        - articles
+      summary: Añade un nuevo artículo a la tienda
+      description: Añade un nuevo artículo a la tienda
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/articles'
+        "400":
+          description: General error
+        "409":
+          description: Conflict
+      requestBody:
+        content:
+          application/json:
+              schema:
+                $ref: '#/components/schemas/articles'
+        required: true
+  /articles/{article_id}:
+    get:
+      tags:
+        - articles
+      summary: Busca un producto de la tienda por su id
+      description: Busca un producto de la tienda por su id
+      parameters:
+        - name: article_id
+          in: path
+          description: Id del producto a buscar
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/articles'
+        '400':
+          description: General error
+    put:
+      tags:
+        - articles
+      summary: Modifica un producto de la tienda por ID
+      description: Modifica un producto de la tienda por ID
+      parameters:
+        - name: article_id
+          in: path
+          description: ID del producto de la tienda
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/articles'
+        "400":
+          description: General error
+        "404":
+          description: Recurso no encontrado
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/articles'
+        required: true
+    delete:
+      tags:
+        - articles
+      summary: Borra un producto por su ID
+      description: Borra un producto por su ID
+      parameters:
+        - name: article_id
+          in: path
+          description: id of the posts to be returned
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: General error
+        "404":
+          description: Recurso no encontrado
+    patch:
+      tags:
+        - articles
+      summary: Modifica el precio de un producto
+      description: Borra un producto por su ID
+      parameters:
+        - name: article_id
+          in: path
+          description: id of the posts to be returned
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/articles'
+        '400':
+          description: General error
+        "404":
+          description: Recurso no encontrado
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              example: {
+                          "price": 1.50
+                        }
+        required: true
+  /articles/{article_id}/sell:
+    put:
+      tags:
+        - articles
+      summary: Servicio de venta de una producto
+      description: Se aumenta en uno la venta y se decrementa en uno la cantidad
+      parameters:
+        - name: article_id
+          in: path
+          description: id of the article to be sended
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/articles'
+        "400":
+          description: General error
+        "404":
+          description: Article_id not found
+        "409":
+          description: Precio o cantidad es cero
+  /articles/{article_id}/receive:
+    put:
+      tags:
+        - articles
+      summary: Recibe una cantidad de un producto del almacen a la tienda
+      description: Recibe una cantidad de un producto del almacen a la tienda
+      parameters:
+        - name: article_id
+          in: path
+          description: id of the article to be sended
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/articles'
+        "400":
+          description: Error
+        "404":
+          description: Producto no encontrado
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              example: {
+                        "amount": 22
+                    }
+        required: true
+components:
+  schemas:
+    articles:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "Dalsy"
+        price:
+          type: number
+          multipleOf: 0.01
+          example: 12.49
+        amount:
+          type: integer
+          format: int64
+          example: 2
+        sales:
+          type: integer
+          format: int64
+          example: 1

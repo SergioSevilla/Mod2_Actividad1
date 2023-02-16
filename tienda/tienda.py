@@ -16,6 +16,7 @@ from flask import Flask, request, jsonify, abort
 from flask_swagger_ui import get_swaggerui_blueprint
 import yaml
 from yaml.loader import SafeLoader
+from yaml import Loader, load
 import persistencia
 import almacen_api
 
@@ -109,14 +110,22 @@ if persistencia.check_productos(conexion) == 0:
 
 app = Flask(__name__)
 
-SWAGGER_URL = "/api/docs" #url where the document is showed
-API_URL = "./api_doc.yaml" #where the document is in the flask server
+SWAGGER_URL = '/api/docs'  # Es la ruta donde estará expuesto nuestro Swagger UI
+with open('./tienda_api_doc.yaml', 'r', encoding='utf-8') as api_doc:
+    swagger_yml = load(api_doc, Loader=Loader)
 
+# Utilizando falsk_swagger_ui se creará el servicio:
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
-    API_URL,
-    config={"app_name": "Modulo2 Actividad 5"}
+    './api_doc.yaml',
+    config={
+        'spec': swagger_yml
+    },
 )
+
+app.register_blueprint(swaggerui_blueprint)
+
+
 
 # CRUD productos
 @app.route("/tienda/v1/articles", methods=['GET', 'POST'])
@@ -209,4 +218,4 @@ def receive_article(product_id):
 
 # inicio de flask con host y puerto predefinidos
 if __name__ == '__main__':
-    app.run(host=args.servidor, port=args.puerto)
+    app.run(host=args.servidor, port=args.puerto, debug=True)
