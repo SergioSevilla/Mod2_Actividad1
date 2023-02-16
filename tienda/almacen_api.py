@@ -21,10 +21,10 @@ def obtener_productos( api_key, configuracion):
     url = "http://" + servidor + ":" + str(puerto) + "/almacen/v1/articles"
     #pasamos como cabecera la api-key y el nombre del consumidor
     headers = {"api-key": api_key, "consumer" : consumer}
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=20)
     return response
 
-def obtener_producto(api_key, configuracion, id):
+def obtener_producto(api_key, configuracion, article_id):
     '''
     Obtiene un producto que hay en el almacen por id.
     Se obtiene servidor, puerto y nombre de consumidor del fichero de
@@ -38,12 +38,12 @@ def obtener_producto(api_key, configuracion, id):
     servidor = configuracion["almacen"]["servidor"]
     puerto = configuracion["almacen"]["puerto"]
     consumer = configuracion["consumidor"]["nombre"]
-    url = "http://" + servidor + ":" + str(puerto) + "/almacen/v1/articles/" + str(id)
+    url = "http://" + servidor + ":" + str(puerto) + "/almacen/v1/articles/" + str(article_id)
     headers = {"api-key": api_key, "consumer" : consumer}
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=20)
     return response
 
-def enviar_a_tienda( api_key, id, cantidad, configuracion):
+def enviar_a_tienda( api_key, article_id, cantidad, configuracion):
     '''
     Se llama a servicio de almacen para obtener artículo
 
@@ -56,8 +56,9 @@ def enviar_a_tienda( api_key, id, cantidad, configuracion):
     servidor = configuracion["almacen"]["servidor"]
     puerto = configuracion["almacen"]["puerto"]
     consumer = configuracion["consumidor"]["nombre"]
-    url = "http://" + servidor + ":" + str(puerto) + "/almacen/v1/articles/" + str(id) + "/send"
+    url = "http://" + servidor + ":" + str(puerto) + \
+          "/almacen/v1/articles/" + str(article_id) + "/send"
     data = {"amount" : cantidad }
     headers = {"api-key": api_key, "consumer": consumer}
-    response = requests.put(url, headers=headers, json=data)
+    response = requests.put(url, headers=headers, json=data, timeout=20)
     return response

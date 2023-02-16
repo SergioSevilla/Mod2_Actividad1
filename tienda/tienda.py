@@ -30,7 +30,7 @@ def check_ports(value):
     :return: el puerto introducido
     '''
     ivalue = int(value)
-    if not (1 <= ivalue <= 65535):
+    if not 1 <= ivalue <= 65535:
         raise argparse.ArgumentTypeError(value + " no es un puerto válido [1-65535]")
     return ivalue
 
@@ -55,12 +55,12 @@ def cargar_configuracion(path_config):
     :param path_config: Path del fichero de configuración
     :return: estructura del fichero de configuración
     '''
-    with open(path_config) as f_config:
+    with open(path_config, encoding="utf-8") as f_config:
         datos = yaml.load(f_config, Loader=SafeLoader)
     return datos
 
 
-def inicializar_productos(conexion, configuracion, key):
+def inicializar_productos(con, config, key):
     '''
     Se llamará a la API en caso de que no haya productos en la tienda.
     Se traerá un máximo de 2 productos del almacen
@@ -69,19 +69,21 @@ def inicializar_productos(conexion, configuracion, key):
     :param configuracion: fichero de configuración
     :param key: api-key
     '''
-    productos_almacen = almacen_api.obtener_productos(key, configuracion) #obtenemos productos del almacén
+    productos_almacen = almacen_api.obtener_productos(key, config)
     for article_json in productos_almacen.json():
         # por cada artículo con unidades positivas que haya en el almacen, se traerá un máximo de 2
         if article_json["available"] == "Y" and article_json["stock_units"] > 0:
             if article_json["stock_units"] < 2:
 
-                almacen_api.enviar_a_tienda(key,article_json["article_id"], 1, configuracion)
-                persistencia.crear_producto(conexion,article_json["article_id"], article_json["article_name"],
-                                            0.0, 1, 0)
+                almacen_api.enviar_a_tienda(key,article_json["article_id"], 1, config)
+                new_article={"id":article_json["article_id"],"name":article_json["article_name"],
+                             "price":0.0,"amount":1,"sales":0}
+                persistencia.crear_producto(con,new_article)
             else:
-                almacen_api.enviar_a_tienda(key,article_json["article_id"], 2, configuracion)
-                persistencia.crear_producto(conexion, article_json["article_id"], article_json["article_name"],
-                                            0.0, 2, 0)
+                almacen_api.enviar_a_tienda(key,article_json["article_id"], 2, config)
+                new_article={"id":article_json["article_id"],"name":article_json["article_name"],
+                             "price":0.0,"amount":2,"sales":0}
+                persistencia.crear_producto(con, new_article)
 
 
 # configuración de todos los parámetros de entrada del programa
@@ -90,7 +92,8 @@ requiredNamed = parser.add_argument_group('required arguments')
 requiredNamed.add_argument("-config", "--config", required=True, type=check_file,
                            help="Ruta y nombre del fichero de configuración de la aplicación")
 requiredNamed.add_argument("-key", "--key", required=True,
-                           help="Valor del API KEY para consumir servicios de la aplicación almacén.")
+                           help="Valor del API KEY para consumir servicios de la"
+                                " aplicación almacén.")
 parser.add_argument("-servidor", "--servidor", default="localhost",
                     help="IP o nombre el servidor donde se inicia la aplicación")
 parser.add_argument("-puerto", "--puerto", default=5000, type=check_ports,
@@ -130,53 +133,59 @@ app.register_blueprint(swaggerui_blueprint)
 # CRUD productos
 @app.route("/tienda/v1/articles", methods=['GET', 'POST'])
 def producto():
+    '''
+    Servicios CRUD GET y POST
+    '''
     if request.method == 'GET':
-        args = request.args
-        product_id = args.get("id", default=0, type=int)
+        argumentos = request.args
+        product_id = argumentos.get("id", default=0, type=int)
         if product_id == 0:
             resultado = persistencia.obtener_productos(conexion)
-            return jsonify(resultado), 200
         else:
             resultado = persistencia.obtener_productos_id(conexion, str(product_id))
-            return jsonify(resultado), 200
+        return jsonify(resultado), 200
     if request.method == 'POST':
         request_json = request.get_json()
-        resultado = persistencia.crear_producto(conexion,request_json.get('id'), request_json.get('name'),
-                                            request_json.get('price'), request_json.get('amount'),
-                                            request_json.get('sales'))
-        if resultado == {}:
+        resultado = persistencia.crear_producto(conexion, request_json)
+        if not resultado:
             abort(409,
-                  "The resoruce you are try to update already exists on the server. Please check the resource id and"
-                  " try again.")
+                  "The resoruce you are try to update already exists on the server."
+                  " Please check the resource id and try again.")
         else:
             return jsonify(resultado), 201
 
 
 @app.route("/tienda/v1/articles/<product_id>", methods=['GET', 'DELETE', 'PUT'])
 def producto_id(product_id):
-
+    '''
+    Servicios CRUD GET by id, DELETE y PUT
+    '''
     if request.method == 'GET':
         resultado = persistencia.obtener_productos_id(conexion,product_id)
         return jsonify(resultado), 200
     if persistencia.check_productos_by_id(conexion,product_id) == 0:
         abort(404,
-              "The requested resource was not found on the server. Please check the resource id and try again.")
+              "The requested resource was not found on the server."
+              " Please check the resource id and try again.")
     elif request.method == 'DELETE':
         resultado = persistencia.borrar_por_id(conexion, product_id)
         return jsonify(resultado), 200
     elif request.method == 'PUT':
         request_json = request.get_json()
-        resultado = persistencia.actualizar_producto(conexion,request_json.get('name'), request_json.get('price'),
-                                                     request_json.get('amount'), request_json.get('sales'),
-                                                     product_id)
+        resultado = persistencia.actualizar_producto(conexion,request_json,product_id)
         return jsonify(resultado), 200
 
 
 # servicio de cambio de precio
 @app.route("/tienda/v1/articles/<product_id>", methods=['PATCH'])
 def modificar_precio(product_id):
+    '''
+    Servicio para modificar precio
+    '''
     if persistencia.check_productos_by_id(conexion,product_id) == 0:
-        abort(404, "The requested resource was not found on the server. Please check the resource id and try again.")
+        abort(404,
+              "The requested resource was not found on the server."
+              " Please check the resource id and try again.")
     else:
         request_json = request.get_json()
         resultado = persistencia.modificar_precio(conexion, product_id, request_json.get('price'))
@@ -186,8 +195,12 @@ def modificar_precio(product_id):
 # servicio de venta de producto
 @app.route("/tienda/v1/articles/<product_id>/sell", methods=['PUT'])
 def vender_producto(product_id):
+    '''
+    Servicio de venta de un producto
+    '''
     if persistencia.check_productos_by_id(conexion,product_id) == 0:
-        abort(404, "The requested resource was not found on the server. Please check the resource id and try again.")
+        abort(404, "The requested resource was not found on the server."
+                   " Please check the resource id and try again.")
     else:
         resultado = persistencia.vender_producto(conexion,product_id)
         if "error" in resultado:
@@ -199,12 +212,17 @@ def vender_producto(product_id):
 # servicio para recibir artículos del almacen
 @app.route("/tienda/v1/articles/<product_id>/receive", methods=['PUT'])
 def receive_article(product_id):
+    '''
+    Servicio de recepción desde almacén.
+    '''
     respuesta = almacen_api.obtener_producto(args.key, configuracion, product_id)
     if respuesta.status_code == 200:
         request_json = request.get_json()
         response_json = respuesta.json()
-        if response_json["stock_units"] >= request_json["amount"] and response_json["available"] == "Y":
-            response_send = almacen_api.enviar_a_tienda(args.key, product_id,request_json["amount"], configuracion)
+        if response_json["stock_units"] >= request_json["amount"] \
+                and response_json["available"] == "Y":
+            response_send = almacen_api.enviar_a_tienda(args.key, product_id,
+                                                        request_json["amount"], configuracion)
             if response_send.status_code == 200:
                 persistencia.set_cantidad(conexion, product_id, request_json["amount"])
                 return jsonify(persistencia.obtener_productos_id(conexion, product_id)), 200
