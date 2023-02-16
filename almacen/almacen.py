@@ -193,4 +193,4 @@ def specs():
     return send_from_directory(os.getcwd(), "api_doc.yaml")
 
 if __name__ == '__main__':
-    app.run(host="localhost", port=5000, debug=True)
+    app.run(host=servidor, port=puerto, debug=True)

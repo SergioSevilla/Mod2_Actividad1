@@ -451,7 +451,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": \"25\",\r\n    \"name\": \"Nolotil\",\r\n    \"price\": 88.34,\r\n    \"amount\": 2,\r\n    \"sales\": 0\r\n}",
+									"raw": "{\r\n    \"id\": \"25\",\r\n    \"name\": \"Amoxicilina\",\r\n    \"price\": 88.34,\r\n    \"amount\": 2,\r\n    \"sales\": 0\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -542,7 +542,7 @@
 										"exec": [
 											"pm.test(\"User with id = 25 (new) has correct name \", () => {\r",
 											"  const responseJson = pm.response.json();\r",
-											"  pm.expect(responseJson.name).to.eql(\"Nolotil\");\r",
+											"  pm.expect(responseJson.name).to.eql(\"Amoxicilina\");\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -578,7 +578,7 @@
 										"exec": [
 											"pm.test(\"User with id = 25 (new) has correct name \", () => {\r",
 											"  const responseJson = pm.response.json();\r",
-											"  pm.expect(responseJson.name).to.eql(\"Nolotil\");\r",
+											"  pm.expect(responseJson.name).to.eql(\"Amoxicilina\");\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -619,7 +619,7 @@
 										"exec": [
 											"pm.test(\"User with id = 25 (new) has correct name \", () => {\r",
 											"  const responseJson = pm.response.json();\r",
-											"  pm.expect(responseJson.name).to.eql(\"Nolotil New\");\r",
+											"  pm.expect(responseJson.name).to.eql(\"Amoxicilina New\");\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -631,7 +631,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": {{article_id}},\r\n    \"name\": \"Nolotil New\",\r\n    \"price\": 12.99,\r\n    \"amount\": 8,\r\n    \"sales\": 20\r\n}",
+									"raw": "{\r\n    \"id\": {{article_id}},\r\n    \"name\": \"Amoxicilina New\",\r\n    \"price\": 12.99,\r\n    \"amount\": 8,\r\n    \"sales\": 20\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -780,6 +780,38 @@
 										"v1",
 										"articles",
 										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RECEIVE from alamacen",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"amount\" : 5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{servidor_tienda}}:{{puerto_tienda}}/tienda/v1/articles/1/receive",
+									"protocol": "http",
+									"host": [
+										"{{servidor_tienda}}"
+									],
+									"port": "{{puerto_tienda}}",
+									"path": [
+										"tienda",
+										"v1",
+										"articles",
+										"1",
+										"receive"
 									]
 								}
 							},
