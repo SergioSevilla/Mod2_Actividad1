@@ -72,7 +72,7 @@ def inicializar_productos(conexion, configuracion, key):
     productos_almacen = almacen_api.obtener_productos(key, configuracion) #obtenemos productos del almacén
     for article_json in productos_almacen.json():
         # por cada artículo con unidades positivas que haya en el almacen, se traerá un máximo de 2
-        if article_json["availabe"] == "Y" and article_json["stock_units"] > 0:
+        if article_json["available"] == "Y" and article_json["stock_units"] > 0:
             if article_json["stock_units"] < 2:
 
                 almacen_api.enviar_a_tienda(key,article_json["article_id"], 1, configuracion)
