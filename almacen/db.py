@@ -64,7 +64,7 @@ def get_all_rows_articles (conexion):
     cur = conexion.cursor()
     datos_json=[]
     for row in cur.execute("SELECT * FROM articles"):
-        datos_json.append({'article_id' : row[0],'article_name' : row[1], 'description' : row[2], 'stock_units' : row[3], 'availabe' : row[4]})
+        datos_json.append({'article_id' : row[0],'article_name' : row[1], 'description' : row[2], 'stock_units' : row[3], 'available' : row[4]})
     return datos_json
 
 def get_article_by_id(conexion, p_article_id):
