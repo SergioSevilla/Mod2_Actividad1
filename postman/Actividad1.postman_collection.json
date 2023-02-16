@@ -52,12 +52,12 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles",
+									"raw": "http://{{servidor_almacen}}:{{puerto_almacen}}/almacen/v1/articles",
 									"protocol": "http",
 									"host": [
 										"{{servidor_almacen}}"
 									],
-									"port": "5000",
+									"port": "{{puerto_almacen}}",
 									"path": [
 										"almacen",
 										"v1",
@@ -101,12 +101,12 @@
 									}
 								],
 								"url": {
-									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles",
+									"raw": "http://{{servidor_almacen}}:{{puerto_almacen}}/almacen/v1/articles",
 									"protocol": "http",
 									"host": [
 										"{{servidor_almacen}}"
 									],
-									"port": "5000",
+									"port": "{{puerto_almacen}}",
 									"path": [
 										"almacen",
 										"v1",
@@ -147,12 +147,12 @@
 									}
 								],
 								"url": {
-									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}",
+									"raw": "http://{{servidor_almacen}}:{{puerto_almacen}}/almacen/v1/articles/{{article_id}}",
 									"protocol": "http",
 									"host": [
 										"{{servidor_almacen}}"
 									],
-									"port": "5000",
+									"port": "{{puerto_almacen}}",
 									"path": [
 										"almacen",
 										"v1",
@@ -203,12 +203,12 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}",
+									"raw": "http://{{servidor_almacen}}:{{puerto_almacen}}/almacen/v1/articles/{{article_id}}",
 									"protocol": "http",
 									"host": [
 										"{{servidor_almacen}}"
 									],
-									"port": "5000",
+									"port": "{{puerto_almacen}}",
 									"path": [
 										"almacen",
 										"v1",
@@ -260,12 +260,12 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}/send",
+									"raw": "http://{{servidor_almacen}}:{{puerto_almacen}}/almacen/v1/articles/{{article_id}}/send",
 									"protocol": "http",
 									"host": [
 										"{{servidor_almacen}}"
 									],
-									"port": "5000",
+									"port": "{{puerto_almacen}}",
 									"path": [
 										"almacen",
 										"v1",
@@ -317,12 +317,12 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}/receive",
+									"raw": "http://{{servidor_almacen}}:{{puerto_almacen}}/almacen/v1/articles/{{article_id}}/receive",
 									"protocol": "http",
 									"host": [
 										"{{servidor_almacen}}"
 									],
-									"port": "5000",
+									"port": "{{puerto_almacen}}",
 									"path": [
 										"almacen",
 										"v1",
@@ -341,7 +341,6 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"\r",
 											""
 										],
 										"type": "text/javascript"
@@ -363,12 +362,12 @@
 									}
 								],
 								"url": {
-									"raw": "http://{{servidor_almacen}}:5000/almacen/v1/articles/{{article_id}}",
+									"raw": "http://{{servidor_almacen}}:{{puerto_almacen}}/almacen/v1/articles/{{article_id}}",
 									"protocol": "http",
 									"host": [
 										"{{servidor_almacen}}"
 									],
-									"port": "5000",
+									"port": "{{puerto_almacen}}",
 									"path": [
 										"almacen",
 										"v1",
@@ -432,308 +431,378 @@
 			"name": "Tienda",
 			"item": [
 				{
-					"name": "Obtener productos",
-					"event": [
+					"name": "Status_OK_201",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status GET request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5000/productos",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"productos"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Obtener un producto",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status GET request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5000/productos/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"productos",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Obtener un producto con param",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status GET request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5000/productos?id=2",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"productos"
-							],
-							"query": [
+							"name": "CREATE Article",
+							"event": [
 								{
-									"key": "id",
-									"value": "2"
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Crear producto",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status GET request\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": \"25\",\r\n    \"name\": \"Nolotil\",\r\n    \"price\": 88.34,\r\n    \"amount\": 2,\r\n    \"sales\": 0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{servidor_tienda}}:{{puerto_tienda}}/tienda/v1/articles",
+									"protocol": "http",
+									"host": [
+										"{{servidor_tienda}}"
+									],
+									"port": "{{puerto_tienda}}",
+									"path": [
+										"tienda",
+										"v1",
+										"articles"
+									]
+								}
+							},
+							"response": []
 						}
 					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"nombre\": \"Amoxicilina\",\r\n    \"precio\": 88.34,\r\n    \"cantidad\": 2\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
 							}
 						},
-						"url": {
-							"raw": "http://localhost:5000/productos",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"productos"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Borrar producto",
-					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"type": "text/javascript",
 								"exec": [
-									"pm.test(\"Successful status GET request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
+									"pm.test(\"Successful status GET request\", function () {",
+									"    pm.response.to.have.status(201);",
 									"});"
-								],
-								"type": "text/javascript"
+								]
 							}
 						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"nombre\": \"Amoxicilina\",\r\n    \"precio\": 88.34,\r\n    \"cantidad\": 2\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+					]
+				},
+				{
+					"name": "Status_OK_200",
+					"item": [
+						{
+							"name": "GET Article",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
 								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://{{servidor_tienda}}:{{puerto_tienda}}/tienda/v1/articles",
+									"protocol": "http",
+									"host": [
+										"{{servidor_tienda}}"
+									],
+									"port": "{{puerto_tienda}}",
+									"path": [
+										"tienda",
+										"v1",
+										"articles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET Article by id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"User with id = 25 (new) has correct name \", () => {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.expect(responseJson.name).to.eql(\"Nolotil\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://{{servidor_tienda}}:{{puerto_tienda}}/tienda/v1/articles/{{article_id}}",
+									"protocol": "http",
+									"host": [
+										"{{servidor_tienda}}"
+									],
+									"port": "{{puerto_tienda}}",
+									"path": [
+										"tienda",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET Article by id with param",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"User with id = 25 (new) has correct name \", () => {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.expect(responseJson.name).to.eql(\"Nolotil\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://{{servidor_tienda}}:{{puerto_tienda}}/tienda/v1/articles?id={{article_id}}",
+									"protocol": "http",
+									"host": [
+										"{{servidor_tienda}}"
+									],
+									"port": "{{puerto_tienda}}",
+									"path": [
+										"tienda",
+										"v1",
+										"articles"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "{{article_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "MODIFY Article",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"User with id = 25 (new) has correct name \", () => {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.expect(responseJson.name).to.eql(\"Nolotil New\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{article_id}},\r\n    \"name\": \"Nolotil New\",\r\n    \"price\": 12.99,\r\n    \"amount\": 8,\r\n    \"sales\": 20\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{servidor_tienda}}:{{puerto_tienda}}/tienda/v1/articles/{{article_id}}",
+									"protocol": "http",
+									"host": [
+										"{{servidor_tienda}}"
+									],
+									"port": "{{puerto_tienda}}",
+									"path": [
+										"tienda",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "MODIFY Article price",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"User with id = 25 (new) has correct amount \", () => {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.expect(JSON.stringify(responseJson.price)).to.eql(\"10.33\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"price\" : 10.33\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{servidor_tienda}}:{{puerto_tienda}}/tienda/v1/articles/{{article_id}}",
+									"protocol": "http",
+									"host": [
+										"{{servidor_tienda}}"
+									],
+									"port": "{{puerto_tienda}}",
+									"path": [
+										"tienda",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SELL Article",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"User with id = 25 (new) has correct amount \", () => {\r",
+											"    const responseJson = pm.response.json();\r",
+											"    pm.expect(JSON.stringify(responseJson.amount)).to.eql(\"7\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://{{servidor_tienda}}:{{puerto_tienda}}/tienda/v1/articles/{{article_id}}/sell",
+									"protocol": "http",
+									"host": [
+										"{{servidor_tienda}}"
+									],
+									"port": "{{puerto_tienda}}",
+									"path": [
+										"tienda",
+										"v1",
+										"articles",
+										"{{article_id}}",
+										"sell"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE Article",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nombre\": \"Amoxicilina\",\r\n    \"precio\": 88.34,\r\n    \"cantidad\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{servidor_tienda}}:{{puerto_tienda}}/tienda/v1/articles/{{article_id}}",
+									"protocol": "http",
+									"host": [
+										"{{servidor_tienda}}"
+									],
+									"port": "{{puerto_tienda}}",
+									"path": [
+										"tienda",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
 							}
 						},
-						"url": {
-							"raw": "http://localhost:5000/productos/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"productos",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Modificar producto",
-					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"type": "text/javascript",
 								"exec": [
-									"pm.test(\"Successful status GET request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
+									"pm.test(\"Successful status GET request\", function () {",
+									"    pm.response.to.have.status(200);",
 									"});"
-								],
-								"type": "text/javascript"
+								]
 							}
 						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": 1,\r\n    \"nombre\": \"sildenafilo\",\r\n    \"precio\": 12.99,\r\n    \"cantidad\": 8\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/productos/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"productos",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Modificar precio",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status GET request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"precio\" : 10.33\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/productos/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"productos",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Crear venta",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful status GET request\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5000/productos/1/vender",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"productos",
-								"1",
-								"vender"
-							]
-						}
-					},
-					"response": []
+					]
 				}
 			],
 			"event": [
