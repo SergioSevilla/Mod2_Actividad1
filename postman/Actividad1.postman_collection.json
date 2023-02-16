@@ -708,9 +708,14 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"User with id = 25 (new) has correct amount \", () => {\r",
+											"pm.test(\"User with id = 25 (new) decrement the value of amount \", () => {\r",
 											"    const responseJson = pm.response.json();\r",
 											"    pm.expect(JSON.stringify(responseJson.amount)).to.eql(\"7\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"User with id = 25 (new) increment the value of  sales\", () => {\r",
+											"    const responseJson = pm.response.json();\r",
+											"    pm.expect(JSON.stringify(responseJson.sales)).to.eql(\"21\");\r",
 											"});"
 										],
 										"type": "text/javascript"
