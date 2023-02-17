@@ -1,3 +1,6 @@
+'''
+Módulo para la interacción con la base de datos
+'''
 import sqlite3
 
 def connect_db (p_database_file):
@@ -19,12 +22,12 @@ def initialize_db(conexion):
     cur = conexion.cursor()
 
     res = cur.execute("SELECT name FROM sqlite_master WHERE name='articles'")
-    if (res.fetchone() is None):
+    if res.fetchone() is None:
         cur.execute("CREATE TABLE articles(article_id INTEGER PRIMARY KEY, article_name NOT NULL, description, stock_units DEFAULT 0, available DEFAULT 'Y')")
         conexion.commit()
 
     res = cur.execute("SELECT name FROM sqlite_master WHERE name='consumers'")
-    if (res.fetchone() is None):
+    if res.fetchone() is None:
         cur.execute("CREATE TABLE consumers(consumer_id INTEGER PRIMARY KEY, consumer NOT NULL, api_key NOT NULL)")
         conexion.commit()
 
@@ -37,7 +40,7 @@ def populate_tables(conexion, default_consumer, default_api_key):
     cur = conexion.cursor()
     statement = "SELECT count(*) FROM articles"
     res=cur.execute(statement)
-    if (res.fetchone() == (0,)):
+    if res.fetchone() == (0,):
         data = [
                 (1, 'Nolotil', 'Analgésico Nolotil', 101, 'Y'),
                 (2, 'Dalsy', 'Antiinflamatorio infantil Dalsy (ibuprofeno)', 122, 'Y'),
@@ -49,7 +52,7 @@ def populate_tables(conexion, default_consumer, default_api_key):
 
     statement = "SELECT count(*) FROM consumers"
     res=cur.execute(statement)
-    if (res.fetchone() == (0, )):
+    if res.fetchone() == (0, ):
         data = (1, default_consumer, default_api_key)
         statement  = "INSERT INTO consumers VALUES(?, ?, ?)"
         cur.execute(statement, data)
@@ -64,7 +67,11 @@ def get_all_rows_articles (conexion):
     cur = conexion.cursor()
     datos_json=[]
     for row in cur.execute("SELECT * FROM articles"):
-        datos_json.append({'article_id' : row[0],'article_name' : row[1], 'description' : row[2], 'stock_units' : row[3], 'available' : row[4]})
+        datos_json.append({'article_id' : row[0],
+                           'article_name' : row[1],
+                           'description' : row[2],
+                           'stock_units' : row[3],
+                           'available' : row[4]})
     return datos_json
 
 def get_article_by_id(conexion, p_article_id):
@@ -77,7 +84,12 @@ def get_article_by_id(conexion, p_article_id):
     cur = conexion.cursor()
     data = cur.execute("SELECT * FROM articles WHERE article_id = " + str(p_article_id) )
     row = data.fetchone()
-    datos_json={'article_id' : row[0],'article_name' : row[1], 'description' : row[2], 'stock_units' : row[3], 'available' : row[4]}
+    datos_json={'article_id' : row[0],
+                'article_name' : row[1],
+                'description' : row[2],
+                'stock_units' : row[3],
+                'available' : row[4]
+                }
     return datos_json
 
 def exists_article_by_id(conexion, p_article_id):
@@ -90,10 +102,9 @@ def exists_article_by_id(conexion, p_article_id):
     cur = conexion.cursor()
     data = cur.execute("SELECT * FROM articles WHERE article_id = " + str(p_article_id) )
     row = data.fetchone()
-    if (row == None):
+    if row is None:
         return False
-    else:
-        return True
+    return True
 
 def delete_by_id(conexion, p_article_id):
     '''
@@ -117,11 +128,20 @@ def update_article (conexion, p_article_id, p_json_data):
     :param value3: Data in formato json
     '''
     cur = conexion.cursor()
-    cur.execute("UPDATE articles SET article_id = " + p_json_data["article_id"] + ", article_name = '" + p_json_data["article_name"] + "', description = '" + p_json_data["description"] + "', stock_units = " + str(p_json_data["stock_units"]) + ", available ='" + p_json_data["available"] +"' WHERE article_id = " + str(p_article_id) )
+    cur.execute("UPDATE articles SET article_id = " + p_json_data["article_id"] +
+                ", article_name = '" + p_json_data["article_name"] +
+                "', description = '" + p_json_data["description"] +
+                "', stock_units = " + str(p_json_data["stock_units"]) +
+                ", available ='" + p_json_data["available"] +
+                "' WHERE article_id = " + str(p_article_id))
     conexion.commit()
     row = cur.execute("SELECT * FROM articles WHERE article_id = " + str(p_json_data["article_id"]))
     ans=row.fetchone()
-    datos_json={'article_id' : ans[0],'article_name' : ans[1], 'description' : ans[2], 'stock_units' : ans[3], 'available' : ans[4]}
+    datos_json={'article_id' : ans[0],
+                'article_name' : ans[1],
+                'description' : ans[2],
+                'stock_units' : ans[3],
+                'available' : ans[4]}
     return datos_json
 
 def create_article (conexion, p_data):
@@ -137,7 +157,11 @@ def create_article (conexion, p_data):
     conexion.commit()
     row = cur.execute("SELECT * FROM articles WHERE article_id=" + str(cur.lastrowid))
     ans = row.fetchone()
-    datos_json ={'article_id' : ans[0],'article_name' : ans[1], 'description' : ans[2], 'stock_units' : ans[3], 'available' : ans[4]}
+    datos_json ={'article_id' : ans[0],
+                 'article_name' : ans[1],
+                 'description' : ans[2],
+                 'stock_units' : ans[3],
+                 'available' : ans[4]}
     return datos_json
 
 def send_article_by_id (conexion, p_article_id, p_amount):
@@ -153,12 +177,14 @@ def send_article_by_id (conexion, p_article_id, p_amount):
     ans = row.fetchone()
     existing_amount = int(ans[0])
     solicited_amount = int(p_amount)
-    if (existing_amount >= solicited_amount):
-        if ( existing_amount - solicited_amount == 0 ):
+    if existing_amount >= solicited_amount:
+        if existing_amount - solicited_amount == 0:
             availability = 'N'
         else:
             availability = 'Y'
-        statement = "UPDATE articles SET stock_units = "+ str(existing_amount - solicited_amount) + ", available = '" + availability + "' WHERE article_id=" + str(p_article_id)
+        statement = "UPDATE articles SET stock_units = "+ str(existing_amount - solicited_amount)
+        statement = statement + ", available = '" + availability
+        statement = statement + "' WHERE article_id=" + str(p_article_id)
         row = cur.execute(statement)
         conexion.commit()
     else:
@@ -182,7 +208,11 @@ def receive_article_by_id (conexion, p_article_id, p_amount):
     conexion.commit()
     row = cur.execute("SELECT * FROM articles WHERE article_id=" + str(p_article_id))
     ans = row.fetchone()
-    datos_json ={'article_id' : ans[0],'article_name' : ans[1], 'description' : ans[2], 'stock_units' : ans[3], 'available' : ans[4]}
+    datos_json ={'article_id' : ans[0],
+                 'article_name' : ans[1],
+                 'description' : ans[2],
+                 'stock_units' : ans[3],
+                 'available' : ans[4]}
     return datos_json
 
 def validate_login (conexion, p_consumer, p_api_key):
@@ -195,12 +225,10 @@ def validate_login (conexion, p_consumer, p_api_key):
     '''
     if p_api_key is None or p_consumer is None:
         return False
-    else:
-        cur = conexion.cursor()
-        statement = "SELECT consumer_id FROM consumers WHERE consumer = '" + p_consumer + "' AND api_key = '" + p_api_key + "'"
-        row = cur.execute(statement)
-        ans = row.fetchone()
-        if (ans == None):
-            return False
-        else:
-            return True
+    cur = conexion.cursor()
+    statement = "SELECT consumer_id FROM consumers WHERE consumer = '" + p_consumer + "' AND api_key = '" + p_api_key + "'"
+    row = cur.execute(statement)
+    ans = row.fetchone()
+    if ans is None:
+        return False
+    return True

@@ -1,15 +1,15 @@
 '''
 La aplicación recibirá como argumentos opcionales:
-a.--servidor: IP o nombre del servidor donde se inicia la aplicación.Opcional. Por defecto localhost.
+a.--servidor: IP o nombre del servidor. Opcional. Por defecto localhost.
 b.--puerto: puerto donde se expondrá el API. Opcional. Por defecto 5000.
 c.--config: ruta y nombre del fichero de configuración de la aplicación.Obligatorio.
 '''
 import os
 import argparse
-import yaml
 from functools import wraps
 from flask import Flask, jsonify, request, send_from_directory, abort
 from flask_swagger_ui import get_swaggerui_blueprint
+import yaml
 import db
 
 def check_port(p_port):
@@ -19,7 +19,7 @@ def check_port(p_port):
     parav value: port to be checked
     '''
     i_port = int(p_port)
-    if not(1 <= i_port <= 65535):
+    if not 1 <= i_port <= 65535:
         raise argparse.ArgumentTypeError(p_port + " no es un puerto válido [1-65535]")
     return p_port
 
@@ -39,7 +39,7 @@ def return_config (p_config_file_name):
 
     :param value: name of the file to be read
     '''
-    with open(p_config_file_name) as config_file:
+    with open(p_config_file_name, encoding="UTF8") as config_file:
         configdict = yaml.safe_load(config_file)
         config_file.close()
     return configdict
@@ -50,10 +50,10 @@ parser.add_argument('--servidor', help='Ip or name of the server', type=str, def
 parser.add_argument('--puerto', help='Api port', type=check_port, default='5000')
 parser.add_argument('--config', help='File configuration path', nargs=1, required=True, type=check_file)
 
-args = parser.parse_args()
-config_file_name = args.config[0]
-servidor = args.servidor
-puerto = args.puerto
+arguments = parser.parse_args()
+config_file_name = arguments.config[0]
+servidor = arguments.servidor
+puerto = arguments.puerto
 
 # open and read the config file
 config_dict = return_config(config_file_name)
@@ -77,18 +77,12 @@ def require_store_app_key(func):
         headers = request.headers
         incoming_consumer = headers.get("consumer")
         incoming_api_key = headers.get("api_key")
-        #print (incoming_consumer + ' - ' + incoming_api_key )
-        if (db.validate_login (conexion, incoming_consumer, incoming_api_key)):
+        if db.validate_login (conexion, incoming_consumer, incoming_api_key):
             return func(*args, **kwargs)
-        else:
-            abort(403) #Forbidden
+        abort(403) #Forbidden
     return comprueba
 
 #-------------------------------------------------------------
-"""
-Flask app for CRUD API
-"""
-
 #Create Flask app
 app = Flask(__name__)
 
@@ -106,14 +100,17 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 @app.route('/almacen/v1/articles', methods=['GET', 'POST'])
 @require_store_app_key
 def articulo():
-    if (request.method == 'GET'):
+    '''
+    GET and POST methods por this URL
+    '''
+    if request.method == 'GET':
         try:
             out_json_data = db.get_all_rows_articles (conexion)
             return jsonify(out_json_data), 200
-        except conexion.Error as e:
-            print('Exception: {}'.format(e))
+        except conexion.Error as error:
+            print(f'Exception: {format(error)}')
             abort (400) #Bad request
-    elif (request.method == 'POST'):
+    elif request.method == 'POST':
         input_json_data = request.get_json(force=True)
 
         if input_json_data.get('article_name') is None:
@@ -122,74 +119,91 @@ def articulo():
             try:
                 out_json_data = db.create_article (conexion, input_json_data)
                 return jsonify( out_json_data ), 201
-            except conexion.Error as e:
-                print('Exception: {}'.format(e))
+            except conexion.Error as error:
+                print(f'Exception: {format(error)}')
                 abort (400) #Bad request
 
 @app.route('/almacen/v1/articles/<article_id>', methods=['GET', 'PUT', 'DELETE'])
 @require_store_app_key
 def articulo_id( article_id ):
+    '''
+    GET, PUT and DELETE methods por this URL
+
+    :param value1: Article id
+    '''
     try:
         exists = db.exists_article_by_id(conexion, article_id)
-        if (not exists):
+        if not exists:
             abort (404) #Not found
-        if (request.method == 'GET'):
+        if request.method == 'GET':
             out_json_data = db.get_article_by_id (conexion, article_id)
             return jsonify(out_json_data), 200
-        elif (request.method == 'PUT'):
+        if request.method == 'PUT':
             input_json_data = request.get_json(force=True)
             if input_json_data.get('article_name') is None:
                 abort(428) #Precondition required
             else:
                 out_json_data = db.update_article (conexion, article_id, input_json_data)
                 return jsonify(out_json_data), 200
-        elif (request.method == 'DELETE'):
+        if request.method == 'DELETE':
             out_json_data = db.delete_by_id(conexion, article_id)
             return jsonify(out_json_data), 200
-    except conexion.Error as e:
-        print('Exception: {}'.format(e))
+    except conexion.Error as error:
+        print(f'Exception: {format(error)}')
         abort (400) #Bad request
 
 @app.route('/almacen/v1/articles/<article_id>/receive', methods=['PUT'])
 @require_store_app_key
 def recibir_articulo_id( article_id ):
+    '''
+    PUT methods por this URL
+
+    :param value1: Article id
+    '''
     try:
         exists = db.exists_article_by_id(conexion, article_id)
-        if (not exists):
+        if not exists:
             abort (404) #Not found
 
         input_json_data = request.get_json(force=True)
         amount = input_json_data.get('amount')
         if amount is None:
             abort(428) #Precondition required
-        
         out_json_data = db.receive_article_by_id (conexion, article_id, amount)
         return jsonify(out_json_data), 200
-    except conexion.Error as e:
-        print('Exception: {}'.format(e))
+    except conexion.Error as error:
+        print(f'Exception: {format(error)}')
         abort (400) #Bad request
 
 @app.route('/almacen/v1/articles/<article_id>/send', methods=['PUT'])
 @require_store_app_key
 def enviar_articulo_id( article_id ):
+    '''
+    PUT methods por this URL
+
+    :param value1: Article id
+    '''
     try:
         exists = db.exists_article_by_id(conexion, article_id)
-        if (not exists):
+        if not exists:
             abort (404) #Not found
 
         input_json_data = request.get_json(force=True)
         amount = input_json_data.get('amount')
         if amount is None:
-                abort(428) #Precondition required
+            abort(428) #Precondition required
 
         out_json_data = db.send_article_by_id (conexion, article_id, amount)
         return jsonify(out_json_data), 200
-    except conexion.Error as e:
-        print('Exception: {}'.format(e))
+    except conexion.Error as err:
+        print(f'Exception: {format(err)}')
         abort (400) #Bad request
 
 @app.route("/api/docs/api_doc.yaml")
 def specs():
+    '''
+    Methods that shows yaml apic doc
+    '''
     return send_from_directory(os.getcwd(), "api_doc.yaml")
 
 if __name__ == '__main__':
